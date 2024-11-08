@@ -36,7 +36,7 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-app.post('/send_mail', (req, res) => {
+app.post('/send', (req, res) => {
     const { recipient, subject, message } = req.body;
 
     const mailOption = {
@@ -49,14 +49,14 @@ app.post('/send_mail', (req, res) => {
     transporter.sendMail(mailOption, (error, info) => {
         if (error) {
             console.log('error', error);
-            return res.status(500).json({message: 'Fail to send mail'})
+            res.status(500).send('Fail to send mail')
         }
-        res.status(200).json({message: 'Email sent successfully'})
+        res.status(200).send('Email sent successfully')
         });
 });
 
 
 
 app.listen(3002, () => {
-    console.log('Server is running on port 3000');
+    console.log('Server is running on port 3002');
 });
