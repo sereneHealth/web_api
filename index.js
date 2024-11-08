@@ -31,16 +31,16 @@ db.getConnection((err, connection) => {
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user:  'bankoleazeezb98@gmail.com',
-        pass: 'fgeqqnzwbcvygbhj'
+        user:  'sereneschealinitiative@gmail.com',
+        pass: 'pyarlljetewrioyw'
     }
 });
 
 app.post('/send', (req, res) => {
-    const { recipient, subject, message } = req.body;
+    const { sender, recipient, subject, message } = req.body;
 
     const mailOption = {
-        from: 'bankoleazeezbabatunde@gmail.com',
+        from: sender,
         to: recipient,
         subject: subject,
         text: message
