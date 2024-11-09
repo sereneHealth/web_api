@@ -37,11 +37,12 @@ const transporter = nodemailer.createTransport({
 });
 
 app.post('/send', (req, res) => {
-    const { recipient, subject, message } = req.body;
+    const { senderEmail, subject, message } = req.body;
 
     const mailOption = {
         from: 'sereneschealinitiative@gmail.com',
-        to: recipient,
+        to: 'sereneschealinitiative@gmail.com',
+        replyTo: senderEmail,
         subject: subject,
         text: message
     };
