@@ -1,0 +1,9 @@
+#envirinment
+.env
+
+#log
+*.log
+
+#build and dist
+/build
+/dist
