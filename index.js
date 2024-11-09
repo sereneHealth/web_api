@@ -31,8 +31,8 @@ db.getConnection((err, connection) => {
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user:  'sereneschealinitiative@gmail.com',
-        pass: 'pyarlljetewrioyw'
+        user:  process.env.DB_EU,
+        pass: process.env.DB_EP
     }
 });
 
@@ -40,8 +40,8 @@ app.post('/send', (req, res) => {
     const { senderEmail, subject, message } = req.body;
 
     const mailOption = {
-        from: 'sereneschealinitiative@gmail.com',
-        to: 'sereneschealinitiative@gmail.com',
+        from: process.env.DB_EU,
+        to: process.env.DB_EU,
         replyTo: senderEmail,
         subject: subject,
         text: message
