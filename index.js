@@ -3,7 +3,7 @@ import express from "express";
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
 import cors from "cors";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 const app = express();
 app.use(express.json());
