@@ -4,11 +4,24 @@ import dotenv from "dotenv";
 import nodemailer from "nodemailer";
 import cors from "cors";
 import bcrypt from "bcryptjs";
+import cookieParser from "cookie-parser";
+import JWT from 'jsonwebtoken';
+
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    callback(null, true)
+  },
+  method: ['POST', 'GET', 'DELETE', 'PUT'],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
 
 const app = express();
 app.use(express.json());
 dotenv.config();
-app.use(cors());
+app.use(cors(corsOptions));
+app.use(cookieParser());
 
 const db = mysql.createPool({
   host: process.env.DB_HOST,
@@ -25,9 +38,11 @@ db.getConnection((err, connection) => {
     console.error("Database connection failed", err.stack);
     return;
   }
-  console.log("Database connected" + "" + connection.threadId);
+  console.log("Database connected" + " " + connection.threadId);
   connection.release();
 });
+
+db.query('UPDATE TABLE users ADD role(ENUM')
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -101,6 +116,40 @@ app.post("/register", async (req, res) => {
       return res.status(500).json({ message: "Error processing request" });
     }
   });
+});
+
+//Login user route
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+  db.query(`SELECT * FROM users WHERE email = ?`, [email], (err, result) => {
+    if (err || result.length === 0) {
+      return res.status(404).json({error: 'User not found'});
+    }
+    const user = result[0];
+    const isPasCorrect = bcrypt.compareSync(password, user.password);
+
+    if (!isPasCorrect) {
+      return res.status(401).json({error: 'Incorrect password'});
+    }
+
+    const token = JWT.sign({id: user.id}, process.env.JWT_SECRET, {expiresIn: '1h'});
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none'
+    });
+    res.status(200).json({message: 'Login succesful'});
+  });
+});
+
+//route to logout
+app.post('/logout', (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none'
+  });
+  res.json({message: 'Logout successfully'});
 });
 
 app.listen(3002, () => {
