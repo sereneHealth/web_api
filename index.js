@@ -42,8 +42,6 @@ db.getConnection((err, connection) => {
   connection.release();
 });
 
-db.query('UPDATE TABLE users ADD role(ENUM')
-
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -72,20 +70,10 @@ app.post("/send", (req, res) => {
   });
 });
 
-/*const sql = `CREATE TABLE IF NOT EXISTS users(id INT PRIMARY KEY AUTO_INCREMENT,
-first_name VARCHAR(255), last_name VARCHAR(255), phone_number VARCHAR(15), email VARCHAR(255), password VARCHAR(255))`;
-
-db.query(sql, (err, result) => {
-    if (err) {
-         console.log('Failed to create table');
-         return;
-        }
-        console.log('table created successfully')
-});*/
 
 //Route to register user
 app.post("/register", async (req, res) => {
-  const { first_name, last_name, phone_number, email, password } = req.body;
+  const { first_name, last_name, phone_number, role, email, password } = req.body;
   const sql = `SELECT * FROM users WHERE email = ?`;
   db.query(sql, [email], async (err, result) => {
     if (err) {
@@ -97,10 +85,10 @@ app.post("/register", async (req, res) => {
     }
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
-      const sql = `INSERT INTO users(first_name, last_name, phone_number, email, password) VALUES (?, ?, ?, ?, ?)`;
+      const sql = `INSERT INTO users(first_name, last_name, phone_number, role, email, password) VALUES (?, ?, ?, ?, ?, ?)`;
       db.query(
         sql,
-        [first_name, last_name, phone_number, email, hashedPassword],
+        [first_name, last_name, phone_number, role, email, hashedPassword],
         (err, result) => {
           if (err) {
             console.log("Error registering user", err);
@@ -139,6 +127,37 @@ app.post('/login', (req, res) => {
       sameSite: 'none'
     });
     res.status(200).json({message: 'Login succesful'});
+  });
+});
+
+//Middleware to unthenticate user
+const AuthenticateToken = (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).json({message: 'Unauthorized'});
+  }
+
+  JWT.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({message: 'Invalid token'});
+    }
+    req.user = user;
+    next();
+  });
+};
+
+
+//Create post
+app.post('/posts', AuthenticateToken, (req, res) => {
+  const { image, title, content } = req.body;
+  const userid = req.user.id
+  const sql = `INSERT INTO posts (user_id, image, title, content) VALUES (?, ?, ?, ?)`;
+  db.query(sql, [userid, image, title, content], (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({message: 'Error creating post'});
+    }
+    res.status(200).json({message: 'Post created successfully'});
   });
 });
 
