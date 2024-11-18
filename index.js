@@ -220,7 +220,7 @@ const AuthenticateToken = (req, res, next) => {
 
 
 //Create post
-app.post('/posts', AuthenticateToken, (req, res) => {
+app.post('/create/posts', AuthenticateToken, (req, res) => {
   const { image, title, content } = req.body;
   const userid = req.user.id
   const sql = `INSERT INTO posts (user_id, image, title, content) VALUES (?, ?, ?, ?)`;
@@ -230,6 +230,18 @@ app.post('/posts', AuthenticateToken, (req, res) => {
       return res.status(500).json({message: 'Error creating post'});
     }
     res.status(200).json({message: 'Post created successfully'});
+  });
+});
+
+//Route to fetch all blog post
+app.get('/blog/post', (req, res) => {
+  const sql = `SELECT * FROM posts`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({error: 'Fail to fetch post'});
+    }
+    res.json(result);
   });
 });
 
