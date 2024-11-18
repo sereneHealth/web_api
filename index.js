@@ -42,6 +42,7 @@ db.getConnection((err, connection) => {
   connection.release();
 });
 
+
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -70,6 +71,77 @@ app.post("/send", (req, res) => {
   });
 });
 
+//send newsletter mail
+app.post("/send", (req, res) => {
+  const { subject, message } = req.body;
+
+  const mailOption = {
+    from: process.env.DB_EU,
+    to: process.env.DB_EU,
+    replyTo: senderEmail,
+    subject: subject,
+    text: message,
+  };
+
+  transporter.sendMail(mailOption, (error, info) => {
+    if (error) {
+      console.log("error", error);
+      res.status(500).send("Fail to send mail");
+    }
+    res.status(200).send("Email sent successfully");
+  });
+});
+
+//send mail to all user
+app.post('/sendmail', (req, res) => {
+  const {replyMail, subjects, messages} = req.body;
+
+  db.query(`SELECT email FROM newsletter`, (err, result) => {
+    if (err) {
+      console.log(err)
+      return res.status(400).json({message: 'Error selecting user'});
+    }
+
+    const mailList = result.map((row) => row.email).join(',');
+    console.log(mailList);
+
+    const mailOption = {
+      from: process.env.DB_EU,
+      to: mailList,
+      replyTo: replyMail,
+      subject: subjects,
+      text: messages,
+    };
+  
+    transporter.sendMail(mailOption, (error, info) => {
+      if (error) {
+        console.log("error", error);
+        res.status(500).send("Fail to send mail");
+      }
+      res.status(200).send("Email sent successfully");
+    });
+  });
+});
+
+//submit mail for newsletter
+app.post('/newsletter', (req, res) => {
+  const {newsMail} = req.body;
+  const sql = `SELECT * FROM newsletter WHERE email = ?`;
+  db.query(sql, [newsMail], (err, result) => {
+    if (err || result.length > 0) {
+      return res.status(400).json({message: 'User already exist'})
+    }
+    const sql2 = `INSERT INTO newsletter(email) VALUES(?)`;
+    db.query(sql2, [newsMail], (err, result) => {
+      if (err) {
+        console.log(err)
+        return res.status(500).json({message: 'Error inserting email'});
+      }
+      res.status(200).json({message: 'Inserted successfully'});
+      console.log('Email inserted');
+    });
+  });
+});
 
 //Route to register user
 app.post("/register", async (req, res) => {
