@@ -71,30 +71,10 @@ app.post("/send", (req, res) => {
   });
 });
 
-//send newsletter mail
-app.post("/send", (req, res) => {
-  const { subject, message } = req.body;
-
-  const mailOption = {
-    from: process.env.DB_EU,
-    to: process.env.DB_EU,
-    replyTo: senderEmail,
-    subject: subject,
-    text: message,
-  };
-
-  transporter.sendMail(mailOption, (error, info) => {
-    if (error) {
-      console.log("error", error);
-      res.status(500).send("Fail to send mail");
-    }
-    res.status(200).send("Email sent successfully");
-  });
-});
 
 //send mail to all user
 app.post('/sendmail', (req, res) => {
-  const {replyMail, subjects, messages} = req.body;
+  const { subjects, messages} = req.body;
 
   db.query(`SELECT email FROM newsletter`, (err, result) => {
     if (err) {
@@ -108,7 +88,7 @@ app.post('/sendmail', (req, res) => {
     const mailOption = {
       from: process.env.DB_EU,
       to: mailList,
-      replyTo: replyMail,
+      replyTo: process.env.DB_EU,
       subject: subjects,
       text: messages,
     };
