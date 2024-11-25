@@ -225,6 +225,23 @@ app.get('/blog/post', (req, res) => {
   });
 });
 
+//Rout to display blog detail
+app.get('/post/details/:id', (req, res) => {
+  const sql = `SELECT * FROM posts WHERE id = ?`;
+  const postid = req.params.id;
+
+  db.query(sql, [postid], (err, result) => {
+    if (err) {
+      return res.status(500).json({error: 'Error selecting post'});
+    }
+    if (result.length === 0) {
+      return res.status(404).json({error: 'Post not found'});
+    }
+    res.json(result)
+  });
+});
+
+
 //route to logout
 app.post('/logout', (req, res) => {
   res.clearCookie('token', {
