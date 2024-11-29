@@ -200,7 +200,7 @@ const AuthenticateToken = (req, res, next) => {
 
 
 //Create post
-app.post('/create/posts', (req, res) => {
+app.post('/create/posts', AuthenticateToken, (req, res) => {
   const { image, title, content } = req.body;
   const userid = req.user.id
   const sql = `INSERT INTO posts (user_id, image, title, content) VALUES (?, ?, ?, ?)`;
