@@ -242,6 +242,33 @@ app.get('/post/details/:id', (req, res) => {
 });
 
 
+// Route to create event
+app.post('/create/events', AuthenticateToken, (req, res) => {
+  const { title, venue, description, author, image } = req.body;
+  const userid = req.user.id
+  const sql = `INSERT INTO events (user_id, title, venue, description, author, image) VALUES (?, ?, ?, ?, ?, ?)`;
+  db.query(sql, [userid, title, venue, description, author, image], (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({message: 'Error creating event'});
+    }
+    res.status(200).json({message: 'Event created successfully'});
+  });
+});
+
+//Route to fetch events posts
+app.get('/event/posts', (req, res) => {
+  const sql = `SELECT * FROM events`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({error: 'Fail to fetch event posts'});
+    }
+    res.json(result);
+  });
+});
+
+
 //route to logout
 app.post('/logout', (req, res) => {
   res.clearCookie('token', {
