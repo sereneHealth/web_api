@@ -225,7 +225,7 @@ app.get('/blog/post', (req, res) => {
   });
 });
 
-//Rout to display blog detail
+//Route to display blog detail
 app.get('/post/details/:id', (req, res) => {
   const sql = `SELECT * FROM posts WHERE id = ?`;
   const postid = req.params.id;
@@ -265,6 +265,22 @@ app.get('/event/posts', (req, res) => {
       return res.status(500).json({error: 'Fail to fetch event posts'});
     }
     res.json(result);
+  });
+});
+
+//Route to fetch events by id
+app.get('/event/details/:id', (req, res) => {
+  const sql = `SELECT * FROM events WHERE id = ?`;
+  const postid = req.params.id;
+
+  db.query(sql, [postid], (err, result) => {
+    if (err) {
+      return res.status(500).json({error: 'Error selecting event'});
+    }
+    if (result.length === 0) {
+      return res.status(404).json({error: 'Event not found'});
+    }
+    res.json(result)
   });
 });
 
