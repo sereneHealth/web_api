@@ -6,6 +6,7 @@ import cors from "cors";
 import bcrypt from "bcryptjs";
 import cookieParser from "cookie-parser";
 import JWT from 'jsonwebtoken';
+import multer from 'multer';
 
 
 const corsOptions = {
@@ -43,6 +44,9 @@ db.getConnection((err, connection) => {
 });
 
 
+//File upload
+const upload = multer({dest: 'uploads/'});
+
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -73,17 +77,17 @@ app.post("/send", (req, res) => {
 
 
 //send mail to all user
-app.post('/sendmail', (req, res) => {
+app.post('/sendmail', upload.fields([{name: 'pdf'},]), async (req, res) => {
   const { subjects, messages} = req.body;
+  const pdfFile = req.files['pdf'][0];
 
-  db.query(`SELECT email FROM newsletter`, (err, result) => {
+  db.query(`SELECT email FROM newsletter`, async (err, result) => {
     if (err) {
       console.log(err)
       return res.status(400).json({message: 'Error selecting user'});
     }
 
     const mailList = result.map((row) => row.email).join(',');
-    console.log(mailList);
 
     const mailOption = {
       from: process.env.DB_EU,
@@ -91,15 +95,21 @@ app.post('/sendmail', (req, res) => {
       replyTo: process.env.DB_EU,
       subject: subjects,
       text: messages,
+      attachments: [
+        {
+          filename: pdfFile.originalname,
+          path: pdfFile.path
+        },
+      ],
     };
-  
-    transporter.sendMail(mailOption, (error, info) => {
-      if (error) {
-        console.log("error", error);
-        res.status(500).send("Fail to send mail");
-      }
-      res.status(200).send("Email sent successfully");
-    });
+
+  try {
+    await transporter.sendMail(mailOption);
+    res.status(200).json({message: "Email sent successfully"}); 
+  } catch (err) {
+    console.error(err);
+        res.status(500).json({message: "Fail to send mail"});
+  }
   });
 });
 
