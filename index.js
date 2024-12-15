@@ -135,7 +135,7 @@ app.post('/newsletter', (req, res) => {
 
 //Route to register user
 app.post("/register", async (req, res) => {
-  const { first_name, last_name, phone_number, email, password } = req.body;
+  const { first_name, last_name, phone_number, email, password, role } = req.body;
   const sql = `SELECT * FROM users WHERE email = ?`;
   db.query(sql, [email], async (err, result) => {
     if (err) {
@@ -147,10 +147,10 @@ app.post("/register", async (req, res) => {
     }
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
-      const sql = `INSERT INTO users(first_name, last_name, phone_number, email, password) VALUES (?, ?, ?, ?, ?)`;
+      const sql = `INSERT INTO users(first_name, last_name, phone_number, email, password, role) VALUES (?, ?, ?, ?, ?, ?)`;
       db.query(
         sql,
-        [first_name, last_name, phone_number, email, hashedPassword],
+        [first_name, last_name, phone_number, email, hashedPassword, role],
         (err, result) => {
           if (err) {
             console.log("Error registering user", err);
