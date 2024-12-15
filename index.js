@@ -211,10 +211,10 @@ const AuthenticateToken = (req, res, next) => {
 
 //Create post
 app.post('/create/posts', AuthenticateToken, (req, res) => {
-  const { image, title, content } = req.body;
+  const { image, title, content, author } = req.body;
   const userid = req.user.id
-  const sql = `INSERT INTO posts (user_id, image, title, content) VALUES (?, ?, ?, ?)`;
-  db.query(sql, [userid, image, title, content], (err, result) => {
+  const sql = `INSERT INTO posts (user_id, image, title, content, author) VALUES (?, ?, ?, ?, ?)`;
+  db.query(sql, [userid, image, title, content, author], (err, result) => {
     if (err) {
       console.log(err);
       return res.status(500).json({message: 'Error creating post'});
@@ -251,6 +251,40 @@ app.get('/post/details/:id', (req, res) => {
   });
 });
 
+//Route to edit blog posts
+app.put('/edit-blog/:id', (req, res) => {
+
+  const postId = req.params.id;
+  const { image, title, content, author } = req.body;
+  const sql = `UPDATE posts SET image = ?, title = ?, content = ?, author =? WHERE id = ?`;
+  db.query(sql, [image, title, content, author, postId ], (err, result) => {
+    if (err) {
+      console.error('Error updating post:', err);
+      return res.status(500).json('Error updating the post');
+    }
+    res.status(200).json('Post updated successfully');
+  });
+});
+
+
+//Route to delete blog post
+app.delete('/delete-blog/:id', (req, res) => {
+  const postId = req.params.id;
+
+  const query = 'DELETE FROM posts WHERE id = ?';
+
+  db.query(query, [postId], (err, results) => {
+    if (err) {
+      console.error('Error deleting post:', err);
+      return res.status(500).json({ message: 'Server error', error: err.message });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+    res.status(200).json({ message: 'Post deleted successfully' });
+  });
+});
 
 // Route to create event
 app.post('/create/events', AuthenticateToken, (req, res) => {
@@ -291,6 +325,40 @@ app.get('/event/details/:id', (req, res) => {
       return res.status(404).json({error: 'Event not found'});
     }
     res.json(result)
+  });
+});
+
+//Route to edit event
+app.put('/edit-blog/:id', (req, res) => {
+
+  const postId = req.params.id;
+  const { title, venue, description, author, image } = req.body;
+  const sql = `UPDATE events SET title = ?, venue = ?, description = ?, author = ?, image = ? WHERE id = ?`;
+  db.query(sql, [title, venue, description, author, image, postId ], (err, result) => {
+    if (err) {
+      console.error('Error updating Event:', err);
+      return res.status(500).json('Error updating the Event');
+    }
+    res.status(200).json('Event updated successfully');
+  });
+});
+
+//Route to delete event
+app.delete('/delete-blog/:id', (req, res) => {
+  const postId = req.params.id;
+
+  const query = 'DELETE FROM events WHERE id = ?';
+
+  db.query(query, [postId], (err, results) => {
+    if (err) {
+      console.error('Error deleting event:', err);
+      return res.status(500).json({ message: 'Server error', error: err.message });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+    res.status(200).json({ message: 'Event deleted successfully' });
   });
 });
 
