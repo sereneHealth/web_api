@@ -7,6 +7,8 @@ import bcrypt from "bcryptjs";
 import cookieParser from "cookie-parser";
 import JWT from "jsonwebtoken";
 import multer from "multer";
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from "./swagger.js";
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -53,6 +55,9 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// Swagger doccumment route
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 app.post("/send", (req, res) => {
   const { senderEmail, subject, message } = req.body;
 
@@ -93,45 +98,7 @@ app.post("/sendmail", upload.fields([{ name: "pdf" }]), async (req, res) => {
       <html>
       <body>
       <h3>Dear ${name},</h3>
-      <p>As the year draws to a close, we extend our heartfelt gratitude to you for your commitment to fostering a safe and healthy learning environment for your students. 
-      At Serene Scheal Initiative, our mission remains unwavering: to create healthier school environments and empower students through comprehensive health programs with 
-      the aim to foster a culture of wellness that supports academic success and lifelong healthy habits. <br /> <br/>
-Over the past year, our efforts have yielded remarkable progress in school health and safety. During our recent launch and outreach programs, we: <br />
-<ul>
-<li>Equipped schools with free first aid kits to handle emergency health situations.</li>
-<li>Delivered impactful health education sessions to both learners and educators, sparking critical awareness on first aid and preventive healthcare within the school community.</li>
-<li>Received encouraging feedback that affirms the transformative potential of a school health program.</li> 
-</ul>
-<br/>
-
-We are especially grateful to the schools we engaged with directly, as your openness to our initiative strengthens our resolve to provide innovative and sustainable school health solutions. <br /> <br />
-
-For schools we couldn’t visit during our outreach, this serves as an invitation to explore how our program can revolutionize your school health systems. Our comprehensive services include: <br /> <br />
-<ul>
-<li>Setting up functional school health structures tailored to your school’s needs.</li>
-<li>Regular health education sessions for learners and staff.</li>
-<li>Periodic health screenings for promotive and preventive health </li>
-<li>Guidance in fostering a safer, healthier school community.</li>
-</ul>
-
-<strong>Why Your School Needs a Comprehensive Health Program</strong> <br />
- Research consistently shows that healthier students perform better academically, have higher attendance rates, and exhibit improved behavioral outcomes. By integrating Serene Scheal Initiative into your school system, you’re ensuring that every child has the support they need to thrive both in and out of the classroom. <br /> <br />
-
-<strong> Looking Ahead to 2025</strong> <br />
- As we gear up for the next academic term starting in January, now is the perfect time to position your school as a model of safety and wellness. Our team is ready to collaborate with you to establish health and safety structures that will make your school stand out as a leader in learner-centric education. Take a look at our brochure for more information 
- <a href='https://drive.google.com/file/d/1heLcFxsg4OSZU6WKSWeay8PeCE7qqQ-L/view?usp=drivesdk'>https://drive.google.com/file/d/1heLcFxsg4OSZU6WKSWeay8PeCE7qqQ-L/view?usp=drivesdk</a>, or [Or open the attached brochure] <br /> <br />
-
-<strong> Wrap-Up of 2024</strong> <br />
- This year, Serene Scheal Initiative reached over 52 school communities, delivered 23 health education sessions, and distributed 50 first aid kits. <br /> <br />
-
-Hear what a school administrator said “The Health Education Seminar was a valuable event that equipped students and staff with essential life-saving skills and health knowledge. Regular health education sessions like this are recommended to reinforce these critical skills and ensure the school community remains informed and ready to act in emergencies”- Mrs Suluka Khadijat (VP, WISEGATE INTERNATIONAL SCHOOL) <br /> <br />
-
-These milestones reflect our dedication to supporting schools and communities. However, we recognize there’s much more to accomplish, and we’re excited to expand our reach in the coming year. <br /> <br />
-
-We invite you to join us on this journey of transformation. Let’s discuss how we can partner to make your school a beacon of health and safety in 2025. <br /> <br />
-
-<strong>Kindly take this moment to fill out this 5 min* survey</strong>
-</p>
+      <p></p>
 <p>Warm regards, <br/> Bilikis Adesokan <br/> Founder & Team Lead
       <br/> <strong>Serene Scheal Initiative (School Health Program)</strong> <br/>
       ballyunique3568@gmail.com | 09060856551/09060162090.</p>
@@ -164,6 +131,27 @@ We invite you to join us on this journey of transformation. Let’s discuss how 
 });
 
 //submit mail for newsletter
+/**
+* @swagger
+* /newsletter:
+ *   post:
+ *     summary: Submit mail for newsletter
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               newsMail:
+ *                 type: string
+ *                 example: serene@gmail.com
+ *     responses:
+ *       200:
+ *         description: Inserted successfully
+ *       500:
+ *         description: Error inserting email
+*/
 app.post("/newsletter", (req, res) => {
   const { newsMail } = req.body;
   const sql = `SELECT * FROM newsletter WHERE email = ?`;
