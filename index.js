@@ -149,6 +149,7 @@ app.post("/sendmail", upload.fields([{ name: "pdf" }]), async (req, res) => {
  *               properties:
  *                newsMail:
  *                   type: string
+ *                   format: email
  *                   example: serene@gmail.com
  *     responses:
  *       200:
@@ -175,6 +176,45 @@ app.post("/newsletter", (req, res) => {
   });
 });
 
+// Register user
+/**
+* @swagger
+* /register:
+*   post:
+*     summary: Register user into database.
+*     requestBody:
+*       required: true
+*       content: 
+*         application/json:
+*           schema:
+*             type: array
+*             items:
+*               type: object
+*               properties:
+*                 first_name:
+*                   type: string
+*                   example: Ade
+*                 last_name:
+*                   type: string
+*                   example: Oye
+*                 phone_number:
+*                   type: number
+*                   example: 09000000000
+*                 email:
+*                   type: string
+*                   format: email
+*                   example: Serene@gamil
+*                 password:
+*                   type: string
+*                   example: password1234
+*     responses:
+*       200:
+*         description: User registerd successfully
+*       400:
+*         description: User already exist
+*       500:
+*       description: Error registering user
+*/
 //Route to register user
 app.post("/register", async (req, res) => {
   const { first_name, last_name, phone_number, email, password, role } =
