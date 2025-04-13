@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 import cookieParser from "cookie-parser";
 import JWT from "jsonwebtoken";
 import multer from "multer";
-import swaggerUi from 'swagger-ui-express';
+import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swagger.js";
 
 const corsOptions = {
@@ -56,7 +56,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // Swagger doccumment route
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.post("/send", (req, res) => {
   const { senderEmail, subject, message } = req.body;
@@ -132,26 +132,30 @@ app.post("/sendmail", upload.fields([{ name: "pdf" }]), async (req, res) => {
 
 //submit mail for newsletter
 /**
-* @swagger
-* /newsletter:
+ * @swagger
+ * /newsletter:
  *   post:
  *     summary: Submit mail for newsletter
+ *     description: >
+ *       **NOTE:** Include request with `withCredentials: true` to include cookies info.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               newsMail:
- *                 type: string
- *                 example: serene@gmail.com
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                newsMail:
+ *                   type: string
+ *                   example: serene@gmail.com
  *     responses:
  *       200:
  *         description: Inserted successfully
  *       500:
  *         description: Error inserting email
-*/
+ */
 app.post("/newsletter", (req, res) => {
   const { newsMail } = req.body;
   const sql = `SELECT * FROM newsletter WHERE email = ?`;
