@@ -248,7 +248,7 @@ app.post("/register", async (req, res) => {
 //Login user route
 /** 
  * @swagger
- * /login
+ * /login:
  *   post:
  *     summary: This to login existing user
  *     requestBody:
