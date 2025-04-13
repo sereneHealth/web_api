@@ -192,7 +192,7 @@ app.post("/newsletter", (req, res) => {
 *                   type: string
 *                   example: Oye
 *                 phone_number:
-*                   type: number
+*                   type: string
 *                   example: 09000000000
 *                 email:
 *                   type: string
@@ -246,6 +246,34 @@ app.post("/register", async (req, res) => {
 });
 
 //Login user route
+/** 
+ * @swagger
+ * /login
+ *   post:
+ *     summary: This to login existing user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: Serene@gmail
+ *               password:
+ *                 type: string
+ *                 example: password1234
+ *     responses:
+ *       200:
+ *         description: Login succesful
+ *       401:
+ *         description: Incorrect password
+ *       404:
+ *         description: User not found
+ *         
+*/
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   db.query(`SELECT * FROM users WHERE email = ?`, [email], (err, result) => {
