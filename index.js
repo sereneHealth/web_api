@@ -143,8 +143,6 @@ app.post("/sendmail", upload.fields([{ name: "pdf" }]), async (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             type: array
- *             items:
  *               type: object
  *               properties:
  *                newsMail:
@@ -187,8 +185,6 @@ app.post("/newsletter", (req, res) => {
 *       content: 
 *         application/json:
 *           schema:
-*             type: array
-*             items:
 *               type: object
 *               properties:
 *                 first_name:
@@ -213,7 +209,7 @@ app.post("/newsletter", (req, res) => {
 *       400:
 *         description: User already exist
 *       500:
-*       description: Error registering user
+*         description: Error registering user
 */
 //Route to register user
 app.post("/register", async (req, res) => {
