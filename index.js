@@ -136,8 +136,6 @@ app.post("/sendmail", upload.fields([{ name: "pdf" }]), async (req, res) => {
  * /newsletter:
  *   post:
  *     summary: Submit mail for newsletter
- *     description: >
- *       **NOTE:** Include request with `withCredentials: true` to include cookies info.
  *     requestBody:
  *       required: true
  *       content:
