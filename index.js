@@ -408,6 +408,46 @@ app.get("/blog/post", (req, res) => {
 });
 
 //Route to display blog detail
+/**
+ * @swagger
+ * /blog/posts/{id}:
+ *   get:
+ *     summary: Get a single blog post by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the blog post
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved blog post
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   example: 12345
+ *                 title:
+ *                   type: string
+ *                   example: The health care
+ *                 content:
+ *                   type: string
+ *                   example: Health is the first priority
+ *                 author:
+ *                   type: string
+ *                   example: Serene
+ *                 image:
+ *                   type: string
+ *                   example: https://image.com
+ *       404:
+ *         description: Blog post not found
+ *       500:
+ *         description: Error selecting post
+ */
 app.get("/post/details/:id", (req, res) => {
   const sql = `SELECT * FROM posts WHERE id = ?`;
   const postid = req.params.id;
