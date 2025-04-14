@@ -316,6 +316,39 @@ const AuthenticateToken = (req, res, next) => {
 };
 
 //Create post
+/**
+ * @swagger
+ * /create/posts:
+ *   post:
+ *     summary: The endpoint to create a blog post
+ *     description: >
+ *       **NOTE:** Include `withCredentials: true` when making an API call from the frontend.
+ *       This is required for the browser to send cookies along with the request.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               image: 
+ *                 type: string
+ *                 example: https://image.com
+ *               title: 
+ *                 type: string
+ *                 example: The health care
+ *               content:
+ *                 type: string
+ *                 example: Health is the first priority
+ *               author:
+ *                 type: string
+ *                 example: Serene
+ *     responses:
+ *       200:
+ *         description: Post created successfully
+ *       500:
+ *         description: Error creating post
+ */
 app.post("/create/posts", AuthenticateToken, (req, res) => {
   const { image, title, content, author } = req.body;
   const userid = req.user.id;
@@ -330,6 +363,39 @@ app.post("/create/posts", AuthenticateToken, (req, res) => {
 });
 
 //Route to fetch all blog post
+/**
+ * @swagger
+ * /blog/pos:
+ *   get:
+ *     summary: The endpoint to fetch blog posts
+ *     responses:
+ *       200:
+ *         description: Successfully fetched blog posts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   user_id: 
+ *                     type: number
+ *                     example: 1
+ *                   image: 
+ *                     type: string
+ *                     example: https://image.com
+ *                   title:
+ *                     type: string
+ *                     example: The health care
+ *                   content:
+ *                     type: string
+ *                     example: Health is the first priority
+ *                   author:
+ *                     type: string
+ *                     example: Serene
+ *       500:
+ *         description: Fail to fetch posts
+ */
 app.get("/blog/post", (req, res) => {
   const sql = `SELECT * FROM posts`;
   db.query(sql, (err, result) => {
