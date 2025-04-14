@@ -197,7 +197,7 @@ app.post("/newsletter", (req, res) => {
 *                 email:
 *                   type: string
 *                   format: email
-*                   example: Serene@gamil
+*                   example: Serene@gamil.com
 *                 password:
 *                   type: string
 *                   example: password1234
@@ -261,7 +261,7 @@ app.post("/register", async (req, res) => {
  *               email:
  *                 type: string
  *                 format: email
- *                 example: Serene@gmail
+ *                 example: Serene@gmail.com
  *               password:
  *                 type: string
  *                 example: password1234
@@ -333,7 +333,7 @@ const AuthenticateToken = (req, res, next) => {
  *             properties:
  *               image: 
  *                 type: string
- *                 example: https://image.com
+ *                 example: https://image.png
  *               title: 
  *                 type: string
  *                 example: The health care
@@ -383,7 +383,7 @@ app.post("/create/posts", AuthenticateToken, (req, res) => {
  *                     example: 1
  *                   image: 
  *                     type: string
- *                     example: https://image.com
+ *                     example: https://image.png
  *                   title:
  *                     type: string
  *                     example: The health care
@@ -412,7 +412,7 @@ app.get("/blog/post", (req, res) => {
  * @swagger
  * /blog/posts/{id}:
  *   get:
- *     summary: Get a single blog post by ID
+ *     summary: Read post details by Params ID
  *     parameters:
  *       - in: path
  *         name: id
@@ -431,6 +431,9 @@ app.get("/blog/post", (req, res) => {
  *                 id:
  *                   type: string
  *                   example: 12345
+ *                 image:
+ *                   type: string
+ *                   example: https://image.png
  *                 title:
  *                   type: string
  *                   example: The health care
@@ -440,11 +443,8 @@ app.get("/blog/post", (req, res) => {
  *                 author:
  *                   type: string
  *                   example: Serene
- *                 image:
- *                   type: string
- *                   example: https://image.com
  *       404:
- *         description: Blog post not found
+ *         description: Post not found
  *       500:
  *         description: Error selecting post
  */
@@ -464,6 +464,41 @@ app.get("/post/details/:id", (req, res) => {
 });
 
 //Route to edit blog posts
+/**
+ * @swagger
+ * /edit-blog/{id}:
+ *   put:
+ *     summary: Edit a blog post by params ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the blog post
+ *     responses:
+ *       200:
+ *         description: Post updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 image:
+ *                   type: string
+ *                   example: https://image.png
+ *                 title:
+ *                   type: string
+ *                   example: The health care
+ *                 content:
+ *                   type: string
+ *                   example: Health is the first priority
+ *                 author:
+ *                   type: string
+ *                   example: Serene
+ *       500:
+ *         description: Error updating the post
+ */
 app.put("/edit-blog/:id", (req, res) => {
   const postId = req.params.id;
   const { image, title, content, author } = req.body;
@@ -478,6 +513,26 @@ app.put("/edit-blog/:id", (req, res) => {
 });
 
 //Route to delete blog post
+/**
+ * @swagger
+ * /delete-blog/{id}:
+ *   delete:
+ *     summary: Delete a blog post by params ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the blog post
+ *     responses:
+ *       200:
+ *         description: Post deleted successfully
+ *       404:
+ *         description: Post not found
+ *       500:
+ *         description: Server error
+ */
 app.delete("/delete-blog/:id", (req, res) => {
   const postId = req.params.id;
 
@@ -499,6 +554,42 @@ app.delete("/delete-blog/:id", (req, res) => {
 });
 
 // Route to create event
+/**
+ * @swagger
+ * /create/events:
+ *   post:
+ *     summary: The endpoint to create a event post
+ *     description: >
+ *       **NOTE:** Include `withCredentials: true` when making an API call from the frontend.
+ *       This is required for the browser to send cookies along with the request.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title: 
+ *                 type: string
+ *                 example: The health care
+ *               venue:
+ *                 type: string
+ *                 example: Central Hospital
+ *               description: 
+ *                 type: string
+ *                 example: The description of the event
+ *               author:
+ *                 type: string
+ *                 example: Serene
+ *               image: 
+ *                 type: string
+ *                 example: https://image.png
+ *     responses:
+ *        200:
+ *          description: Event created successfully
+ *        500:
+ *          description: Error creating event
+ */
 app.post("/create/events", AuthenticateToken, (req, res) => {
   const { title, venue, description, author, image } = req.body;
   const userid = req.user.id;
@@ -517,6 +608,42 @@ app.post("/create/events", AuthenticateToken, (req, res) => {
 });
 
 //Route to fetch events posts
+/**
+ * @swagger
+ * /event/posts:
+ *   get:
+ *     summary: The endpoint to fetch event post
+ *     responses:
+ *       200:
+ *         description: Successfully fetched event posts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   user_id: 
+ *                     type: number
+ *                     example: 1
+ *                   title: 
+ *                     type: string
+ *                     example: event titile
+ *                   venue: 
+ *                     type: string
+ *                     example: event venue
+ *                   description:
+ *                     type: string
+ *                     example: event description
+ *                   author:
+ *                     type: string
+ *                     example: Serene
+ *                   image:
+ *                     type: string
+ *                     example: https://image.png
+ *       500:
+ *         description: Fail to fetch event posts
+ */
 app.get("/event/posts", (req, res) => {
   const sql = `SELECT * FROM events`;
   db.query(sql, (err, result) => {
@@ -529,6 +656,49 @@ app.get("/event/posts", (req, res) => {
 });
 
 //Route to fetch events by id
+/**
+ * @swagger
+ * /event/details/{id}:
+ *   get:
+ *     summary: Read event details by Params ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the event post
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved event post
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user_id:
+ *                   type: string
+ *                   example: 12345
+ *                 title:
+ *                   type: string
+ *                   example: The health care
+ *                 venue:
+ *                   type: string
+ *                   example: Health is the first priority
+ *                 description:
+ *                   type: string
+ *                   example: event description
+ *                 author:
+ *                   type: string
+ *                   example: Serene
+ *                 image:
+ *                   type: string
+ *                   example: https://image.png
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Error selecting event
+ */
 app.get("/event/details/:id", (req, res) => {
   const sql = `SELECT * FROM events WHERE id = ?`;
   const postid = req.params.id;
@@ -545,7 +715,45 @@ app.get("/event/details/:id", (req, res) => {
 });
 
 //Route to edit event
-app.put("/edit-blog/:id", (req, res) => {
+/**
+ * @swagger
+ * /edit-event/{id}:
+ *   put:
+ *     summary: Edit a blog post by params ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the blog post
+ *     responses:
+ *       200:
+ *         description: Event updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 title:
+ *                   type: string
+ *                   example: event title
+ *                 venue:
+ *                   type: string
+ *                   example: event venue
+ *                 description:
+ *                   type: string
+ *                   example: event description
+ *                 author:
+ *                   type: string
+ *                   example: Serene
+ *                 image:
+ *                   type: string
+ *                   example: https://image.png
+ *       500:
+ *         description: Error updating the Event
+ */
+app.put("/edit-event/:id", (req, res) => {
   const postId = req.params.id;
   const { title, venue, description, author, image } = req.body;
   const sql = `UPDATE events SET title = ?, venue = ?, description = ?, author = ?, image = ? WHERE id = ?`;
@@ -563,7 +771,27 @@ app.put("/edit-blog/:id", (req, res) => {
 });
 
 //Route to delete event
-app.delete("/delete-blog/:id", (req, res) => {
+/**
+ * @swagger
+ * /delete-event/{id}:
+ *   delete:
+ *     summary: Delete an event post by params ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the event post
+ *     responses:
+ *       200:
+ *         description: Event deleted successfully
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Server error
+ */
+app.delete("/delete-event/:id", (req, res) => {
   const postId = req.params.id;
 
   const query = "DELETE FROM events WHERE id = ?";
@@ -584,13 +812,25 @@ app.delete("/delete-blog/:id", (req, res) => {
 });
 
 //route to logout
+/**
+ * @swagger
+ * /logout:
+ *   post:
+ *     summary: Log out the current user
+ *     description: >
+ *       Ends the user session by clearing the authentication cookie or invalidating the token.
+ *       **NOTE:** Use `withCredentials: true` on the frontend to ensure the cookie is sent.
+ *     responses:
+ *       200:
+ *         description: User logged out successfully
+ */
 app.post("/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
     secure: true,
     sameSite: "none",
   });
-  res.json({ message: "Logout successfully" });
+  res.status(200).json({ message: "Logout successfully" });
 });
 
 app.listen(3002, () => {
